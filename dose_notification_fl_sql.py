@@ -58,42 +58,35 @@ db = sqlite3.connect(fileDb.strpath)
 
 # selects data from database.  LIMIT will  limit results to specified number.
 queries = ("""SELECT remapp_generalstudymoduleattr.study_description as study,
-              remapp_accumprojxraydose.dose_rp_total as ref_air_kerma, 
+              remapp_accumprojxraydose.dose_rp_total as ref_air_kerma,
               remapp_accumprojxraydose.total_acquisition_time as fluoro_time,
-              remapp_generalstudymoduleattr.study_date,  
-              remapp_generalstudymoduleattr.accession_number as acc, 
+              remapp_generalstudymoduleattr.study_date,
+              remapp_generalstudymoduleattr.accession_number as acc,
               remapp_generalequipmentmoduleattr.institution_name as site,
               remapp_generalequipmentmoduleattr.station_name as station,
               remapp_generalstudymoduleattr.study_instance_uid as uid
-              FROM remapp_accumprojxraydose, remapp_accumxraydose, remapp_projectionxrayradiationdose, 
-              remapp_generalstudymoduleattr, remapp_generalequipmentmoduleattr              
+              FROM remapp_accumprojxraydose, remapp_accumxraydose, remapp_projectionxrayradiationdose,
+              remapp_generalstudymoduleattr, remapp_generalequipmentmoduleattr
               WHERE remapp_accumprojxraydose.accumulated_xray_dose_id = remapp_accumxraydose.id
               AND remapp_accumxraydose.projection_xray_radiation_dose_id = remapp_projectionxrayradiationdose.id
               AND remapp_projectionxrayradiationdose.general_study_module_attributes_id = remapp_generalstudymoduleattr.id
               AND remapp_projectionxrayradiationdose.general_study_module_attributes_id = remapp_generalequipmentmoduleattr.id
               """)
 
-# AND remapp_generalstudymoduleattr.study_date > datetime('now', '-90 days')
 
-# pandas dataframe
-# pd.set_option('display.max_columns', 5)
 df = pd.read_sql_query(queries, db)
 df['study'] = df['study'].astype(str)
-# pd.set_option('display.max_columns', 8)
 # print(df.head(10))
 
-#
 # # looks for air kerma values above a set threshold of 5 Gy.
 # # appends outlier data to a file and emails the physics email with study data.
-#
-
 def dose_limit():
     for idx, row in df.iterrows():
         if row.at['ref_air_kerma'] >= 5:
             # list for adding data to spreadsheet for tracking notifications.
             nt = []
             # TODO: change to physics@sanfordhealth.org
-            emailname = "christopher.lahn@sanfordhealth.org"
+            emailname = "christopher.lahn@sanfordhealth.org; physics@sanfordhealth.org"
             study = str(row.at["study"])
             nt.append(study)
             ak = str(row.at["ref_air_kerma"])
@@ -130,8 +123,8 @@ def dose_limit():
                     EmailSender().send_email(emailname, "Fluoro Dose Notification Trigger",
                                              "Hello, \r\n \r\nThis is an automated message.  No reply is necessary."
                                              "  \r\n \r\nAn exam was performed that exceeded our dose Notification limits.  \r\n \r\nExam: "
-                                             +study + "\r\n \r\nAccession #: " + acc + "\r\n \r\nRef Air Kerma: " + ak +
-                                             "\r\n \r\nFluoro Time: " + fltime + "\r\n \r\nStudy Date: " +
+                                             +study + "\r\n \r\nAccession #: " + acc + "\r\n \r\nRef Air Kerma (Gy): " + ak +
+                                             "\r\n \r\nFluoro Time (min): " + fltime + "\r\n \r\nStudy Date: " +
                                              studydate + "\r\n \r\nSite: " + site + "\r\n \r\nStation name: " + station)
                 else:
                     pass
