@@ -41,14 +41,14 @@ log("Start Program")
 is_email = True
 
 # path for local database
-fileDb = py.path.local(r"C:\Users\clahn\Desktop\openrem.db")
+fileDb = py.path.local(path goes here])
 
 
 # make a copy of databse file on my computer.
 # This script will then perform operations on that file.
 if fileDb.isfile():
     fileDb.remove()
-py.path.local(r'W:\SHARE8 Physics\Software\python\data\openrem\openrem081.db').copy(fileDb)
+py.path.local([path goes here]).copy(fileDb)
 
 # Checks if outlook is open.  If not, opens it.
 EmailSender().check_outlook()
@@ -86,7 +86,7 @@ def dose_limit():
             # list for adding data to spreadsheet for tracking notifications.
             nt = []
             # TODO: change to physics@sanfordhealth.org
-            emailname = "christopher.lahn@sanfordhealth.org; physics@sanfordhealth.org"
+            emailname = [emails go here]
             study = str(row.at["study"])
             nt.append(study)
             ak = str(row.at["ref_air_kerma"])
@@ -105,7 +105,7 @@ def dose_limit():
             nt.append(uid)
             # write the notifications to a file.
             # TODO move file to a permanent place
-            wb = openpyxl.load_workbook(r'W:\SHARE8 Physics\Software\python\scripts\clahn\Dose Notification OpenRem\sql dose limit notifications fluoro.xlsx')
+            wb = openpyxl.load_workbook([path goes here])
             sheet = wb['Sheet1']
             # check if UID is already in file.  If so, pass.  If not, append and send notification.
             olduid = []
@@ -115,7 +115,7 @@ def dose_limit():
                 pass
             else:
                 sheet.append(nt)
-                wb.save(r'W:\SHARE8 Physics\Software\python\scripts\clahn\Dose Notification OpenRem\sql dose limit notifications fluoro.xlsx')
+                wb.save(path goes here])
                 wb.close()
                 # calls the module that sends the email with these variables data.
                 # if is_email is true, the email will get sent.  If false, it will not send email.
